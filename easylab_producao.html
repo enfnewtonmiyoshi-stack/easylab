@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EASYLAB - Analisador de Resultados</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a1a;
+            color: #fff;
+        }
+
+        /* ===== LOGIN SCREEN ===== */
+        .login-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0066cc 0%, #004499 100%);
+            padding: 20px;
+        }
+
+        .login-container {
+            background: #2a2a2a;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            padding: 60px 50px;
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .logo-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .logo-box {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #0066cc 0%, #004499 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 8px 20px rgba(0, 102, 204, 0.4);
+            font-size: 3em;
+            color: white;
+            font-weight: 700;
+        }
+
+        .logo-text {
+            font-size: 2em;
+            font-weight: 700;
+            color: #00ccff;
+            margin-bottom: 8px;
+        }
+
+        .logo-subtitle {
+            color: #aaa;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            color: #00ccff;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 0.95em;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #00ccff;
+            background: #222;
+            box-shadow: 0 0 0 4px rgba(0, 204, 255, 0.2);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #0066cc 0%, #004499 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.95em;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(0, 102, 204, 0.4);
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 102, 204, 0.5);
+        }
+
+        .error-message {
+            background: rgba(220, 53, 69, 0.2);
+            border: 1.5px solid #dc3545;
+            color: #ff6b7a;
+            padding: 14px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .error-message.show {
+            display: block;
+            animation: shake 0.4s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        /* ===== APP SCREEN ===== */
+        .app-wrapper {
+            display: none;
+            min-height: 100vh;
+            background: #1a1a1a;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background: #222;
+            border-bottom: 1px solid #333;
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .navbar-logo {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #0066cc 0%, #004499 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2em;
+        }
+
+        .navbar-title {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #00ccff;
+        }
+
+        .navbar-right {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .badge {
+            background: rgba(0, 204, 255, 0.2);
+            color: #00ccff;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            border: 1px solid #00ccff;
+        }
+
+        .btn-logout {
+            background: #333;
+            color: #aaa;
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: #444;
+            color: #fff;
+        }
+
+        /* ===== SCREEN 1: INPUT ===== */
+        .screen1 {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 30px;
+        }
+
+        .input-card {
+            background: #222;
+            border-radius: 20px;
+            padding: 50px;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            border: 1px solid #333;
+        }
+
+        .input-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .input-title h1 {
+            color: #00ccff;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .input-subtitle {
+            color: #aaa;
+            font-size: 0.95em;
+        }
+
+        .textarea-wrapper {
+            margin-bottom: 30px;
+        }
+
+        .input-label {
+            display: block;
+            color: #00ccff;
+            font-weight: 600;
+            margin-bottom: 12px;
+            font-size: 0.95em;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 16px;
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 12px;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            resize: vertical;
+            min-height: 200px;
+            transition: all 0.2s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #00ccff;
+            box-shadow: 0 0 12px rgba(0, 204, 255, 0.2);
+        }
+
+        .input-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95em;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0066cc 0%, #004499 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 102, 204, 0.4);
+            min-width: 150px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 102, 204, 0.5);
+        }
+
+        .btn-secondary {
+            background: #333;
+            color: #aaa;
+            border: 1px solid #444;
+        }
+
+        .btn-secondary:hover {
+            background: #444;
+            color: #fff;
+        }
+
+        /* ===== SCREEN 2: RESULTS ===== */
+        .screen2 {
+            flex: 1;
+            display: none;
+            flex-direction: column;
+            padding: 30px;
+        }
+
+        .screen2-content {
+            display: flex;
+            gap: 30px;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .results-panel {
+            flex: 1;
+            background: #222;
+            border-radius: 16px;
+            padding: 26px;
+            border: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #333;
+        }
+
+        .panel-title {
+            color: #00ccff;
+            font-size: 1.2em;
+            font-weight: 700;
+        }
+
+        .counter {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #dc3545;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.9em;
+            margin-left: auto;
+        }
+
+        .results-content {
+            background: #1a1a1a;
+            border-radius: 10px;
+            padding: 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            line-height: 1.8;
+            color: #00ff00;
+            white-space: pre-wrap;
+            word-break: break-word;
+            flex: 1;
+            overflow-y: auto;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            border: 1px solid #333;
+        }
+
+        .results-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .recommendations-panel {
+            flex: 1.2;
+            background: #222;
+            border-radius: 16px;
+            padding: 26px;
+            border: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow: hidden;
+        }
+
+        .alerts-container {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .alert-item {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .alert-item:hover {
+            border-color: #00ccff;
+            box-shadow: 0 0 12px rgba(0, 204, 255, 0.15);
+        }
+
+        .alert-trigger {
+            padding: 16px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: transparent;
+            transition: background 0.2s;
+        }
+
+        .alert-trigger:hover {
+            background: #222;
+        }
+
+        .alert-item.alto {
+            border-left: 4px solid #dc3545;
+        }
+
+        .alert-item.baixo {
+            border-left: 4px solid #00ccff;
+        }
+
+        .alert-left {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .alert-exame {
+            color: #00ccff;
+            font-weight: 700;
+            font-size: 0.95em;
+        }
+
+        .alert-value {
+            color: #aaa;
+            font-size: 0.8em;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+        }
+
+        .alert-status {
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 0.75em;
+            font-weight: 700;
+        }
+
+        .alert-status.alto {
+            background: rgba(220, 53, 69, 0.3);
+            color: #ff6b7a;
+        }
+
+        .alert-status.baixo {
+            background: rgba(0, 204, 255, 0.3);
+            color: #00ccff;
+        }
+
+        .alert-toggle {
+            color: #666;
+            font-size: 1.2em;
+            transition: transform 0.2s;
+        }
+
+        .alert-toggle.open {
+            transform: rotate(180deg);
+        }
+
+        .alert-content {
+            display: none;
+            padding: 16px;
+            background: #111;
+            border-top: 1px solid #333;
+        }
+
+        .alert-content.show {
+            display: block;
+        }
+
+        .conduta-box {
+            background: #1a1a1a;
+            border-left: 3px solid #00ccff;
+            padding: 14px;
+            border-radius: 6px;
+        }
+
+        .conduta-label {
+            color: #00ccff;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: block;
+            font-size: 0.9em;
+        }
+
+        .conduta-text {
+            color: #ccc;
+            font-size: 0.85em;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .protocolo-badge {
+            display: inline-block;
+            background: rgba(0, 204, 255, 0.15);
+            color: #00ccff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.75em;
+            font-weight: 700;
+            border: 1px solid #00ccff;
+        }
+
+        .no-alerts {
+            text-align: center;
+            color: #666;
+            padding: 50px 20px;
+        }
+
+        .disclaimer {
+            background: rgba(255, 193, 7, 0.15);
+            border: 1px solid #ffc107;
+            border-radius: 12px;
+            padding: 16px;
+            border-left: 4px solid #ffc107;
+            margin-bottom: 20px;
+        }
+
+        .disclaimer-title {
+            color: #ffc107;
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .disclaimer-text {
+            color: #ccc;
+            font-size: 0.85em;
+            line-height: 1.6;
+        }
+
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .back-button button {
+            background: #333;
+            color: #aaa;
+            padding: 8px 16px;
+            border: 1px solid #444;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .back-button button:hover {
+            background: #444;
+            color: #fff;
+        }
+
+        .footer {
+            background: #222;
+            border-top: 1px solid #333;
+            padding: 16px 40px;
+            text-align: center;
+            color: #666;
+            font-size: 0.75em;
+            margin-top: auto;
+        }
+
+        @media (max-width: 1200px) {
+            .screen2-content {
+                flex-direction: column;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <!-- LOGIN -->
+    <div class="login-wrapper">
+        <div class="login-container">
+            <div class="logo-header">
+                <div class="logo-box">E+</div>
+                <div class="logo-text">EASYLAB</div>
+                <div class="logo-subtitle">Simplificando a Vida do Médico</div>
+            </div>
+
+            <div class="error-message" id="errorMessage"></div>
+
+            <form onsubmit="fazerLogin(event)">
+                <div class="form-group">
+                    <label for="usuario">Usuário:</label>
+                    <input type="text" id="usuario" placeholder="Seu usuário" autofocus required>
+                </div>
+
+                <div class="form-group">
+                    <label for="senha">Senha:</label>
+                    <input type="password" id="senha" placeholder="Sua senha" required>
+                </div>
+
+                <button type="submit" class="btn-login">Entrar no Sistema</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- APP -->
+    <div class="app-wrapper" id="app">
+        <div class="navbar">
+            <div class="navbar-left">
+                <div class="navbar-logo">E+</div>
+                <div class="navbar-title">EASYLAB</div>
+            </div>
+            <div class="navbar-right">
+                <div class="badge">✓ Offline</div>
+                <button class="btn-logout" onclick="fazerLogout()">Sair</button>
+            </div>
+        </div>
+
+        <!-- SCREEN 1: INPUT -->
+        <div class="screen1" id="screen1">
+            <div class="input-card">
+                <div class="input-title">
+                    <h1>Analisador de Resultados</h1>
+                    <p class="input-subtitle">Cole o laudo bruto do laboratório para análise</p>
+                </div>
+
+                <div class="textarea-wrapper">
+                    <label class="input-label">Laudo do Laboratório:</label>
+                    <textarea id="entrada" placeholder="Copie e cole aqui o laudo do laboratório..."></textarea>
+                </div>
+
+                <div class="input-buttons">
+                    <button class="btn-primary" onclick="analisarLaudo()">Analisar Laudo</button>
+                    <button class="btn-secondary" onclick="limparEntrada()">Limpar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 2: RESULTS -->
+        <div class="screen2" id="screen2">
+            <div class="back-button">
+                <button onclick="voltarParaEntrada()">← Voltar</button>
+            </div>
+
+            <div class="disclaimer">
+                <div class="disclaimer-title">⚠️ AVISO IMPORTANTE</div>
+                <div class="disclaimer-text">
+                    As condutas clínicas são <strong>sugestões baseadas em protocolos</strong> das principais sociedades médicas.
+                    <strong>A avaliação clínica e responsabilidade final recaem exclusivamente sobre o médico assistente.</strong>
+                </div>
+            </div>
+
+            <div class="screen2-content">
+                <div class="results-panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">Resultados Formatados</h2>
+                        <div class="counter" id="contador" style="display:none;">0</div>
+                    </div>
+                    <div class="results-content" id="results-content">Carregando...</div>
+                    <div class="results-buttons">
+                        <button class="btn-primary" onclick="copiarResultados()">📋 Copiar Resultados</button>
+                    </div>
+                </div>
+
+                <div class="recommendations-panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">Recomendações Clínicas</h2>
+                    </div>
+                    <div class="alerts-container" id="alerts-content">
+                        <div class="no-alerts">Carregando recomendações...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>EASYLAB © 2024 | Desenvolvido por Newton Miyoshi | Sistema seguro • 100% Offline • Versão 8.0</p>
+        </div>
+    </div>
+
+    <script>
+        const CREDENCIAIS_VALIDAS = {
+            'demo': 'senha123',
+            'medico': 'clinica2024',
+        };
+
+        const conductas = {
+            'GLICOSE': {
+                alto: { conduta: 'Jejum >126 mg/dL: suspeita diabetes. Confirmar com HbA1c e TOTG. Iniciar metformina 500mg 2x/dia. Educação nutricional e exercício aeróbico.', protocolo: 'SBD 2025' },
+                baixo: { conduta: 'Hipoglicemia <70 mg/dL. Se sintomático: 15g carboidrato simples. Reavaliação 15 min depois. Rever doses de medicações.', protocolo: 'SBD 2025' }
+            },
+            'HEMOGLOBINA GLICADA': {
+                alto: { conduta: 'HbA1c >9%: diabetes descompensada. Intensificar metformina. Adicionar GLP-1 agonista ou SGLT-2i. Considerar insulina se >10%.', protocolo: 'SBD 2025' },
+                baixo: { conduta: 'HbA1c <5.7%: risco hipoglicemia. Reduzir medicações. Aumentar educação em diabetes. Monitorar auto-monitorização.', protocolo: 'SBD 2025' }
+            },
+            'COLESTEROL TOTAL': {
+                alto: { conduta: 'Meta <200 mg/dL. Estatina atorvastatina 40mg. Dieta com <7% gordura saturada. Exercício regular. Reavaliar em 6 semanas.', protocolo: 'SBC 2023' }
+            },
+            'COLESTEROL LDL': {
+                alto: { conduta: 'Risco intermediário: LDL <100. Alto: <70. Muito alto: <55. Estatina alta intensidade. Ezetimiba se refratário. PCSK9 em casos graves.', protocolo: 'SBC 2023' }
+            },
+            'TRIGLICÉRIDES': {
+                alto: { conduta: 'Se 150-200: reduzir carboidratos e álcool. Se >200: risco pancreatite. Considerar fibrato ou icosapent. Se >500: risco crítico.', protocolo: 'SBC 2023' }
+            },
+            'CREATININA': {
+                alto: { conduta: 'Calcular TFG (CKD-EPI). Se TFG <90: monitorar progressão. <30: referência nefrologia URGENTE. Evitar nefrotóxicos (AINEs).', protocolo: 'SBN 2023' }
+            },
+            'TSH': {
+                alto: { conduta: 'TSH >4-5 mIU/L: hipotireoidismo. Levotiroxina 25-50μg/dia. Aumentar 25μg a cada 6-8 semanas. Meta TSH 0.5-2.5 mIU/L.', protocolo: 'SBEM 2024' },
+                baixo: { conduta: 'TSH <0.4 mIU/L com T4 alto: hipertireoidismo. Investigar Graves vs tireoidite. Referência endocrinologia urgente.', protocolo: 'SBEM 2024' }
+            },
+            'HEMOGLOBINA': {
+                baixo: { conduta: 'Anemia <13.5 g/dL (homens) ou <12 g/dL (mulheres). Investigar causa: ferritina, B12, folato. Ferro oral 325mg/dia se deficiência.', protocolo: 'SBH 2023' }
+            },
+            'LEUCÓCITOS': {
+                alto: { conduta: 'Leucocitose >11 mil/mm³: investigar infecção, inflamação, leucemia. Avaliação clínica + diferencial. Hemoculturas se febre.', protocolo: 'SBH 2023' },
+                baixo: { conduta: 'Leucopenia <4.5 mil/mm³: risco infecção. Investigar medicamentos, VIH, LES. Profilaxia se <1000. Referência hematologia.', protocolo: 'SBH 2023' }
+            },
+            'PLAQUETAS': {
+                baixo: { conduta: 'Trombocitopenia <150 mil/mm³: risco sangramento. <50: risco espontâneo. <20: transfusão preventiva. Investigar causa.', protocolo: 'SBH 2023' }
+            },
+            'POTÁSSIO': {
+                alto: { conduta: 'Hipercalemia >5.5 mEq/L: RISCO ARRITMIA. ECG urgente. Calcium gluconate 10mL IV se K >6. Insulina + glicose. Poliestireno.', protocolo: 'Cardiologia 2023' },
+                baixo: { conduta: 'Hipocalemia <3.5 mEq/L: risco arritmia. Suplementação KCl 20-40 mEq/dia oral. Monitorar ECG. Investigar causa (vômito, diuréticos).', protocolo: 'Cardiologia 2023' }
+            },
+            'SÓDIO': {
+                alto: { conduta: 'Hipernatremia >145 mEq/L: desidratação. Reidratar com água. Investigar diabetes insípido. Monitorar osmolalidade plasmática.', protocolo: 'SBN 2023' },
+                baixo: { conduta: 'Hiponatremia <135 mEq/L: SIADH, ICC, cirrose. Restrição hídrica. Hipertônico se crítico (<120). Referência urgente.', protocolo: 'SBN 2023' }
+            },
+            'CÁLCIO': {
+                alto: { conduta: 'Hipercalcemia: investigar hiperparatireoidismo, malignidade, vitamina D. PTH + Ca iônico urgente. Hidratação IV se crítico.', protocolo: 'Endocrinologia 2024' },
+                baixo: { conduta: 'Hipocalcemia: investigar hipoparatireoidismo, IRC, déficit vitamina D. Suplementar Ca + Vitamina D. Monitorar ECG.', protocolo: 'Endocrinologia 2024' }
+            },
+            'TGO/AST': {
+                alto: { conduta: 'Elevado: investigar hepatite, cirrose, miosite. Dosar TGP, fosfatase alcalina, albumina, TP. Serologia viral. USG fígado.', protocolo: 'Hepatologia 2024' }
+            },
+            'TGP/ALT': {
+                alto: { conduta: 'ALT elevada: lesão hepática aguda. Razão ALT/AST >1 sugere NAFLD. Investigar medicamentos, álcool, vírus hepatotropos.', protocolo: 'Hepatologia 2024' }
+            },
+            'ALBUMINA': {
+                baixo: { conduta: 'Hipoalbuminemia: desnutrição, doença hepática crônica, síndrome nefrótica. Suplementação proteica. Avaliação nutricional urgente.', protocolo: 'Nutrição 2024' }
+            },
+            'DEFAULT': {
+                alto: { conduta: 'Valor acima da normalidade. Correlacionar com clínica do paciente. Investigar causa da alteração.', protocolo: 'Clínica' },
+                baixo: { conduta: 'Valor abaixo da normalidade. Avaliar contexto clínico. Investigar causa. Repetir coleta se necessário confirmar.', protocolo: 'Clínica' }
+            }
+        };
+
+        function fazerLogin(event) {
+            event.preventDefault();
+            const usuario = document.getElementById('usuario').value;
+            const senha = document.getElementById('senha').value;
+            const errorDiv = document.getElementById('errorMessage');
+
+            if (CREDENCIAIS_VALIDAS[usuario] === senha) {
+                localStorage.setItem('logado', 'true');
+                document.querySelector('.login-wrapper').style.display = 'none';
+                document.getElementById('app').style.display = 'flex';
+            } else {
+                errorDiv.textContent = '❌ Usuário ou senha incorretos';
+                errorDiv.classList.add('show');
+                document.getElementById('senha').value = '';
+            }
+        }
+
+        function fazerLogout() {
+            localStorage.removeItem('logado');
+            location.reload();
+        }
+
+        function analisarLaudo() {
+            const entrada = document.getElementById('entrada').value.trim();
+            if (!entrada) {
+                alert('⚠️ Cole um laudo para continuar');
+                return;
+            }
+
+            const exames = extrairExames(entrada);
+            const alterados = exames.filter(e => e.alterado);
+
+            let saida = '';
+            for (let exame of exames) {
+                saida += `${exame.nome.padEnd(45)} ${exame.valor}\n`;
+            }
+
+            document.getElementById('results-content').textContent = saida || 'Nenhum resultado';
+
+            if (alterados.length > 0) {
+                document.getElementById('contador').textContent = alterados.length;
+                document.getElementById('contador').style.display = 'flex';
+            } else {
+                document.getElementById('contador').style.display = 'none';
+            }
+
+            mostrarAlertas(alterados);
+
+            // Mudar para screen2
+            document.getElementById('screen1').style.display = 'none';
+            document.getElementById('screen2').style.display = 'flex';
+        }
+
+        function voltarParaEntrada() {
+            document.getElementById('screen1').style.display = 'flex';
+            document.getElementById('screen2').style.display = 'none';
+        }
+
+        function limparEntrada() {
+            document.getElementById('entrada').value = '';
+            document.getElementById('entrada').focus();
+        }
+
+        function mostrarAlertas(alterados) {
+            const content = document.getElementById('alerts-content');
+            content.innerHTML = '';
+
+            if (alterados.length === 0) {
+                content.innerHTML = '<div class="no-alerts">✓ Todos os valores dentro dos limites normais</div>';
+                return;
+            }
+
+            alterados.forEach((exame, idx) => {
+                const conduta = buscarConduta(exame.nome, exame.tipo);
+                const card = document.createElement('div');
+                card.className = `alert-item ${exame.tipo}`;
+
+                card.innerHTML = `
+                    <div class="alert-trigger" onclick="toggleAlert(${idx})">
+                        <div class="alert-left">
+                            <div class="alert-exame">${exame.nome}</div>
+                            <div class="alert-value">${exame.valor}</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span class="alert-status ${exame.tipo}">${exame.tipo === 'alto' ? '↑ ALTO' : '↓ BAIXO'}</span>
+                            <span class="alert-toggle" id="toggle-${idx}">▼</span>
+                        </div>
+                    </div>
+                    <div class="alert-content" id="content-${idx}">
+                        <div class="conduta-box">
+                            <span class="conduta-label">⚕️ Sugestão de Conduta:</span>
+                            <div class="conduta-text">${conduta.conduta}</div>
+                            <span class="protocolo-badge">${conduta.protocolo}</span>
+                        </div>
+                    </div>
+                `;
+
+                content.appendChild(card);
+            });
+        }
+
+        function toggleAlert(idx) {
+            const content = document.getElementById(`content-${idx}`);
+            const toggle = document.getElementById(`toggle-${idx}`);
+            content.classList.toggle('show');
+            toggle.classList.toggle('open');
+        }
+
+        function buscarConduta(nome, tipo) {
+            const exameNormalizado = nome.toUpperCase();
+            for (let key in conductas) {
+                if (exameNormalizado.includes(key)) {
+                    return conductas[key][tipo] || conductas['DEFAULT'][tipo];
+                }
+            }
+            return conductas['DEFAULT'][tipo];
+        }
+
+        function extrairExames(texto) {
+            const exames = [];
+            const blocos = texto.split('VALOR DE REFERÊNCIA');
+            const linhasParaPular = ['Material:', 'Método:', 'Data', 'Liberado', 'Dr.', 'Resultado conferido'];
+
+            for (let i = 1; i < blocos.length; i++) {
+                const linhas = blocos[i].split('\n');
+                let nomeExame = null;
+                let valor = null;
+                let referencia = '';
+                let tipo = 'normal';
+
+                for (let j = 0; j < linhas.length; j++) {
+                    let linha = linhas[j].trim();
+                    if (!linha) continue;
+
+                    if (linhasParaPular.some(x => linha.includes(x))) {
+                        if (linha.match(/[<>]/)) referencia = linha.substring(0, 100);
+                        continue;
+                    }
+
+                    if (!nomeExame && linha && linha[0] === linha[0].toUpperCase() && linha.length > 2 && !/^[\d,.\s()%-]+$/.test(linha)) {
+                        nomeExame = linha;
+                        continue;
+                    }
+
+                    const valorMatch = linha.match(/(\d+[.,]?\d*)\s*RESULTADO/);
+                    if (valorMatch) {
+                        valor = valorMatch[1];
+                        tipo = determinarTipo(referencia, valor);
+                        break;
+                    }
+
+                    if (nomeExame && !valor) {
+                        const numMatch = linha.match(/^([\d,]+[\d\s,./]*)/);
+                        if (numMatch) {
+                            valor = numMatch[1].replace(/\s/g, '');
+                            tipo = determinarTipo(referencia, valor);
+                            break;
+                        }
+                    }
+                }
+
+                if (nomeExame && valor) {
+                    exames.push({
+                        nome: nomeExame.split('\n')[0].trim(),
+                        valor,
+                        referencia,
+                        alterado: tipo !== 'normal',
+                        tipo
+                    });
+                }
+            }
+
+            return exames;
+        }
+
+        function determinarTipo(referencia, valor) {
+            if (!referencia || !valor) return 'normal';
+            referencia = referencia.toLowerCase();
+            const num = parseFloat(valor.replace(',', '.'));
+
+            if (referencia.includes('inferior')) {
+                const limite = parseFloat(referencia.match(/(\d+[.,]?\d*)/)?.[1]?.replace(',', '.') || 0);
+                return num > limite ? 'alto' : 'normal';
+            }
+            if (referencia.includes('superior')) {
+                const limite = parseFloat(referencia.match(/(\d+[.,]?\d*)/)?.[1]?.replace(',', '.') || 0);
+                return num < limite ? 'baixo' : 'normal';
+            }
+            if (referencia.includes(' a ')) {
+                const matches = [...referencia.matchAll(/(\d+[.,]?\d*)/g)];
+                if (matches.length >= 2) {
+                    const min = parseFloat(matches[0][1].replace(',', '.'));
+                    const max = parseFloat(matches[1][1].replace(',', '.'));
+                    if (num > max) return 'alto';
+                    if (num < min) return 'baixo';
+                }
+            }
+
+            return 'normal';
+        }
+
+        function copiarResultados() {
+            const content = document.getElementById('results-content').textContent;
+            if (!content || content.includes('Carregando')) {
+                alert('⚠️ Analise um laudo primeiro');
+                return;
+            }
+
+            navigator.clipboard.writeText(content).then(() => {
+                alert('✓ Resultados copiados!');
+            });
+        }
+
+        window.addEventListener('load', () => {
+            if (localStorage.getItem('logado') === 'true') {
+                document.querySelector('.login-wrapper').style.display = 'none';
+                document.getElementById('app').style.display = 'flex';
+            }
+        });
+    </script>
+</body>
+</html>

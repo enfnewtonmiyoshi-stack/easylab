@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EASYLAB - Painel Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a1a;
+            color: #fff;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #222;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            color: #00ccff;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #333;
+        }
+
+        .section:last-child {
+            border-bottom: none;
+        }
+
+        h2 {
+            color: #00ccff;
+            font-size: 1.3em;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            color: #aaa;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 0.95em;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #00ccff;
+            background: #222;
+            box-shadow: 0 0 0 4px rgba(0, 204, 255, 0.2);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0066cc 0%, #004499 100%);
+            color: white;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 102, 204, 0.4);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            padding: 8px 16px;
+            font-size: 0.85em;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .message.sucesso {
+            background: rgba(40, 167, 69, 0.2);
+            border: 1px solid #28a745;
+            color: #7ddb5f;
+            display: block;
+        }
+
+        .message.erro {
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid #dc3545;
+            color: #ff6b7a;
+            display: block;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+
+        th {
+            background: #1a1a1a;
+            color: #00ccff;
+            font-weight: 700;
+        }
+
+        tr:hover {
+            background: #1a1a1a;
+        }
+
+        .info-box {
+            background: #1a1a1a;
+            border: 1px solid #00ccff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .info-box strong {
+            color: #00ccff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 EASYLAB - Painel Admin</h1>
+
+        <!-- ADICIONAR USUÁRIO -->
+        <div class="section">
+            <h2>➕ Adicionar Novo Cliente</h2>
+
+            <div id="msg-adicionar" class="message"></div>
+
+            <div class="form-group">
+                <label>Chave Admin:</label>
+                <input type="password" id="admin-key-add" placeholder="Digite sua chave admin">
+            </div>
+
+            <div class="form-group">
+                <label>Usuário (nome do cliente):</label>
+                <input type="text" id="novo-usuario" placeholder="Ex: medico_joao">
+            </div>
+
+            <div class="form-group">
+                <label>Senha:</label>
+                <input type="password" id="nova-senha" placeholder="Digite uma senha">
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="adicionarUsuario()">Criar Usuário</button>
+            </div>
+        </div>
+
+        <!-- LISTAR USUÁRIOS -->
+        <div class="section">
+            <h2>📋 Clientes Cadastrados</h2>
+
+            <div class="info-box">
+                <strong>Para listar usuários:</strong> Digite sua chave admin e clique no botão abaixo
+            </div>
+
+            <div class="form-group">
+                <label>Chave Admin:</label>
+                <input type="password" id="admin-key-list" placeholder="Digite sua chave admin">
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="listarUsuarios()">Listar Usuários</button>
+            </div>
+
+            <table id="tabela-usuarios" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Usuário</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="usuarios-body">
+                </tbody>
+            </table>
+
+            <div id="msg-lista" class="message"></div>
+        </div>
+
+        <!-- INFORMAÇÕES -->
+        <div class="section">
+            <h2>ℹ️ Como Usar</h2>
+
+            <div class="info-box">
+                <strong>1. Chave Admin:</strong> A chave padrão é <code>sua_chave_secreta_aqui</code>. Mude no arquivo server.js!<br><br>
+
+                <strong>2. Adicionar Cliente:</strong> Digite chave + usuário + senha e clique "Criar Usuário"<br><br>
+
+                <strong>3. Deletar Cliente:</strong> Clique no botão "Deletar" ao lado do usuário<br><br>
+
+                <strong>4. O cliente usa:</strong> Abra easylab_producao.html e faça login com o usuário/senha que você criou
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function adicionarUsuario() {
+            const adminKey = document.getElementById('admin-key-add').value;
+            const usuario = document.getElementById('novo-usuario').value;
+            const senha = document.getElementById('nova-senha').value;
+            const msgDiv = document.getElementById('msg-adicionar');
+
+            if (!adminKey || !usuario || !senha) {
+                mostrarMensagem('Preencha todos os campos!', 'erro', msgDiv);
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/adicionar-usuario', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ usuario, senha, admin_key: adminKey })
+                });
+
+                const data = await response.json();
+
+                if (data.sucesso) {
+                    mostrarMensagem(`✓ ${data.mensagem}`, 'sucesso', msgDiv);
+                    document.getElementById('novo-usuario').value = '';
+                    document.getElementById('nova-senha').value = '';
+                } else {
+                    mostrarMensagem(`❌ ${data.mensagem}`, 'erro', msgDiv);
+                }
+            } catch (error) {
+                mostrarMensagem(`❌ Erro: ${error.message}`, 'erro', msgDiv);
+            }
+        }
+
+        async function listarUsuarios() {
+            const adminKey = document.getElementById('admin-key-list').value;
+            const msgDiv = document.getElementById('msg-lista');
+
+            if (!adminKey) {
+                mostrarMensagem('Digite sua chave admin!', 'erro', msgDiv);
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/listar-usuarios', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ admin_key: adminKey })
+                });
+
+                const data = await response.json();
+
+                if (data.sucesso) {
+                    preencherTabela(data.usuarios, adminKey);
+                    document.getElementById('tabela-usuarios').style.display = 'table';
+                    msgDiv.innerHTML = '';
+                } else {
+                    mostrarMensagem(`❌ ${data.mensagem}`, 'erro', msgDiv);
+                }
+            } catch (error) {
+                mostrarMensagem(`❌ Erro: ${error.message}`, 'erro', msgDiv);
+            }
+        }
+
+        function preencherTabela(usuarios, adminKey) {
+            const tbody = document.getElementById('usuarios-body');
+            tbody.innerHTML = '';
+
+            usuarios.forEach(user => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${user.usuario}</strong></td>
+                    <td>
+                        <button class="btn-danger" onclick="deletarUsuario('${user.usuario}', '${adminKey}')">
+                            Deletar
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function deletarUsuario(usuario, adminKey) {
+            if (!confirm(`Tem certeza que quer deletar ${usuario}?`)) return;
+
+            try {
+                const response = await fetch('/api/deletar-usuario', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ usuario, admin_key: adminKey })
+                });
+
+                const data = await response.json();
+
+                if (data.sucesso) {
+                    alert(`✓ ${data.mensagem}`);
+                    listarUsuarios();
+                } else {
+                    alert(`❌ ${data.mensagem}`);
+                }
+            } catch (error) {
+                alert(`❌ Erro: ${error.message}`);
+            }
+        }
+
+        function mostrarMensagem(texto, tipo, elemento) {
+            elemento.className = `message ${tipo}`;
+            elemento.textContent = texto;
+        }
+    </script>
+</body>
+</html>
