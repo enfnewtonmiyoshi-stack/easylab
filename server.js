@@ -41,7 +41,7 @@ app.post('/api/adicionar-usuario', (req, res) => {
     const { usuario, senha, admin_key } = req.body;
 
     // Chave de segurança (mude isso!)
-    if (admin_key !== 'sua_chave_secreta_aqui') {
+    if (admin_key !== 'easy123') {
         return res.json({ sucesso: false, mensagem: 'Chave inválida' });
     }
 
@@ -64,7 +64,7 @@ app.post('/api/adicionar-usuario', (req, res) => {
 app.post('/api/listar-usuarios', (req, res) => {
     const { admin_key } = req.body;
 
-    if (admin_key !== 'sua_chave_secreta_aqui') {
+    if (admin_key !== 'easy123') {
         return res.json({ sucesso: false, mensagem: 'Chave inválida' });
     }
 
@@ -81,7 +81,7 @@ app.post('/api/listar-usuarios', (req, res) => {
 app.post('/api/deletar-usuario', (req, res) => {
     const { usuario, admin_key } = req.body;
 
-    if (admin_key !== 'sua_chave_secreta_aqui') {
+    if (admin_key !== 'easy123') {
         return res.json({ sucesso: false, mensagem: 'Chave inválida' });
     }
 
